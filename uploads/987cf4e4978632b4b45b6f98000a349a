@@ -1,0 +1,51 @@
+Cloud Computing
+Do Practical exercise , Project
+
+
+Information Security
+Project 3 min video + Revise All lectures
+
+
+Software Engineering
+Next phase , previous slide revised
+
+Data Analysis and Visualizations
+Project, Quiz, From Mid to Last
+
+AI
+Quiz(Decision tree and Naive bayes classification) , PCA
+ 
+https://chatgpt.com/share/6753d540-38e0-8009-a761-09fe594ce080
+ 
+ 
+ upwork 
+ hussain1@
+ 
+ enable secret rpass 
+ 
+20.197.43.236
+
+https://www.canva.com/templates/EAFE01yyFdU-entry-level-tech-professional-resume/
+
+
+sudo mkdir -p /media/myfileshare
+if [ ! -d "/etc/smbcredentials" ]; then
+sudo mkdir /etc/smbcredentials
+fi
+if [ ! -f "/etc/smbcredentials/onlineazurestorage.cred" ]; then
+    sudo bash -c 'echo "username=onlineazurestorage" >> /etc/smbcredentials/onlineazurestorage.cred'
+    sudo bash -c 'echo "password=2AIUbyXNVp+fratQU7M3ryGE+ooi4BqqM7mp0QKL0jEtV1ISyOVq6ZgLSpmjnTbaacZ45M/bUV8B+AStyOx2qQ==" >> /etc/smbcredentials/onlineazurestorage.cred'
+fi
+sudo chmod 600 /etc/smbcredentials/onlineazurestorage.cred
+
+sudo bash -c 'echo "//onlineazurestorage.file.core.windows.net/myfileshare /mnt/myfileshare cifs nofail,credentials=/etc/smbcredentials/onlineazurestorage.cred,dir_mode=0755,file_mode=0755,serverino,nosharesock,mfsymlinks,actimeo=30" >> /etc/fstab'
+sudo mount -t cifs //onlineazurestorage.file.core.windows.net/myfileshare /mnt/myfileshare -o credentials=/etc/smbcredentials/onlineazurestorage.cred,dir_mode=0755,file_mode=0755,serverino,nosharesock,mfsymlinks,actimeo=30
+
+
+Ayat Foundation
+
+Why Learn?
+Essential tool for network analysis and troubleshooting.
+Helps understand how data travels over networks.
+
+

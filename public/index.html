@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloud File Manager | Premium</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-light: #e0e7ff;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --success: #10b981;
+      --success-hover: #059669;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --dark: #1e293b;
+      --light: #f8fafc;
+      --gray: #94a3b8;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --sidebar: #1e293b;
+      --text: #0f172a;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 1800px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      width: 100%;
+    }
+
+    /* Header Styles */
+    header {
+      background-color: var(--card);
+      box-shadow: var(--shadow);
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      font-size: 1.75rem;
+      color: var(--primary);
+    }
+
+    /* Auth Section */
+    .auth-section {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 80vh;
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg) 100%);
+    }
+
+    .login-card {
+      background-color: var(--card);
+      border-radius: var(--radius);
+      padding: 3rem;
+      box-shadow: var(--shadow);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      transform: translateY(0);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .login-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .login-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--dark);
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .login-subtitle {
+      color: var(--text-light);
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+
+    /* Main Content */
+    main {
+      flex: 1;
+      padding: 2rem 0;
+    }
+
+    .page-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .page-title i {
+      color: var(--primary);
+    }
+
+    /* File Section */
+    .file-section {
+      display: none;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Upload Area */
+    .upload-area {
+      background-color: var(--card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      flex-grow: 1;
+    }
+
+    .file-input-label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.5rem;
+      background-color: var(--bg);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      height: 100%;
+    }
+
+    .file-input-label:hover {
+      border-color: var(--primary);
+      background-color: rgba(99, 102, 241, 0.05);
+    }
+
+    .file-input-label i {
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+
+    .file-input-label-text {
+      font-weight: 500;
+    }
+
+    .file-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
+    .selected-files {
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .selected-file {
+      display: inline-flex;
+      align-items: center;
+      background-color: var(--primary-light);
+      color: var(--primary);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .selected-file i {
+      margin-left: 0.5rem;
+      cursor: pointer;
+    }
+
+    /* File List */
+    .file-list-container {
+      background-color: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .file-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      background-color: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .file-list-title {
+      font-weight: 600;
+      margin: 0;
+      color: var(--dark);
+    }
+
+    .file-list-stats {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .file-stat {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-light);
+    }
+
+    .file-stat i {
+      font-size: 1rem;
+    }
+
+    .file-list-items {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .file-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      transition: background-color 0.2s;
+    }
+
+    .file-item:last-child {
+      border-bottom: none;
+    }
+
+    .file-item:hover {
+      background-color: var(--bg);
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-grow: 1;
+      min-width: 0;
+    }
+
+    .file-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .file-icon.image {
+      color: var(--success);
+    }
+
+    .file-icon.text {
+      color: var(--info);
+    }
+
+    .file-icon.other {
+      color: var(--warning);
+    }
+
+    .file-details {
+      min-width: 0;
+    }
+
+    .file-name {
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-meta {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.25rem;
+    }
+
+    .file-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-left: 1rem;
+      flex-shrink: 0;
+    }
+
+    .empty-state {
+      padding: 3rem 1rem;
+      text-align: center;
+      color: var(--text-light);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      color: var(--gray);
+      margin-bottom: 1rem;
+    }
+
+    /* Dashboard */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .dashboard-card {
+      background-color: var(--card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-weight: 600;
+      color: var(--dark);
+      font-size: 1.1rem;
+    }
+
+    .card-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-description {
+      color: var(--text-light);
+      font-size: 0.875rem;
+    }
+
+    .chart-container {
+      height: 250px;
+      margin-top: 1rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      outline: none;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-danger {
+      background-color: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: var(--danger-hover);
+    }
+
+    .btn-success {
+      background-color: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: var(--success-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--dark);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background-color: #334155;
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--bg);
+    }
+
+    .btn-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      padding: 0;
+      justify-content: center;
+    }
+
+    .btn-icon i {
+      font-size: 1.25rem;
+    }
+
+    .btn-lg {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      border-radius: var(--radius);
+    }
+
+    .azure-btn {
+      background-color: #0078d4;
+      color: white;
+      width: 100%;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .azure-btn:hover {
+      background-color: #106ebe;
+      transform: translateY(-2px);
+    }
+
+    .azure-btn i {
+      font-size: 1.25rem;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .upload-area {
+        flex-direction: column;
+      }
+      
+      .file-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .file-actions {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: var(--dark);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      z-index: 1000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast i {
+      font-size: 1.25rem;
+    }
+
+    .toast.success i {
+      color: var(--success);
+    }
+
+    .toast.error i {
+      color: var(--danger);
+    }
+
+    .toast.warning i {
+      color: var(--warning);
+    }
+
+    .toast.info i {
+      color: var(--info);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <a href="#" class="logo">
+        <i class="fas fa-cloud-upload-alt logo-icon"></i>
+        <span>CloudFile Pro</span>
+      </a>
+      <button id="logoutBtn" class="btn btn-secondary" style="display:none;">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="authSection" class="auth-section">
+      <div class="login-card">
+        <div class="login-icon">
+          <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+        </div>
+        <h1 class="login-title">Welcome to CloudFile Pro</h1>
+        <p class="login-subtitle">Secure cloud storage with enterprise-grade protection</p>
+        <button id="loginBtn" class="btn btn-lg azure-btn">
+          <i class="fab fa-microsoft"></i>
+          Login with Azure AD
+        </button>
+      </div>
+    </div>
+
+    <div id="fileSection" class="file-section">
+      <h1 class="page-title">
+        <i class="fas fa-cloud"></i> My Cloud Files
+      </h1>
+
+      <!-- Dashboard Analytics -->
+      <div class="dashboard">
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h3 class="card-title">Storage Overview</h3>
+            <i class="fas fa-database" style="color: var(--primary); font-size: 1.5rem;"></i>
+          </div>
+          <div class="card-value" id="totalFiles">0</div>
+          <div class="card-description">Total Files</div>
+        </div>
+
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h3 class="card-title">Storage Used</h3>
+            <i class="fas fa-hard-drive" style="color: var(--success); font-size: 1.5rem;"></i>
+          </div>
+          <div class="card-value" id="totalSize">0</div>
+          <div class="card-description">Megabytes</div>
+        </div>
+
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h3 class="card-title">File Types</h3>
+            <i class="fas fa-chart-pie" style="color: var(--warning); font-size: 1.5rem;"></i>
+          </div>
+          <div class="chart-container">
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Section -->
+      <div class="upload-area">
+        <div class="file-input-wrapper">
+          <label for="fileInput" class="file-input-label">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span class="file-input-label-text">Choose files or drag & drop here</span>
+            <input type="file" id="fileInput" class="file-input" multiple>
+          </label>
+          <div class="selected-files" id="selectedFiles"></div>
+        </div>
+        <button id="uploadBtn" class="btn btn-success btn-lg">
+          <i class="fas fa-upload"></i> Upload Files
+        </button>
+      </div>
+
+      <!-- File List -->
+      <div class="file-list-container">
+        <div class="file-list-header">
+          <h3 class="file-list-title">Your Files</h3>
+          <div class="file-list-stats">
+            <div class="file-stat">
+              <i class="fas fa-image" style="color: var(--success);"></i>
+              <span id="imageCount">0</span>
+            </div>
+            <div class="file-stat">
+              <i class="fas fa-file-alt" style="color: var(--info);"></i>
+              <span id="textCount">0</span>
+            </div>
+            <div class="file-stat">
+              <i class="fas fa-file" style="color: var(--warning);"></i>
+              <span id="otherCount">0</span>
+            </div>
+          </div>
+        </div>
+        <ul class="file-list-items" id="fileList">
+          <li class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <p>No files uploaded yet</p>
+            <p class="text-muted">Upload your first file to get started</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMessage">Operation completed successfully</span>
+  </div>
+
+  <script>
+    // DOM Elements
+    const authSection = document.getElementById('authSection');
+    const fileSection = document.getElementById('fileSection');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileInput = document.getElementById('fileInput');
+    const selectedFiles = document.getElementById('selectedFiles');
+    const fileList = document.getElementById('fileList');
+    const totalFilesEl = document.getElementById('totalFiles');
+    const totalSizeEl = document.getElementById('totalSize');
+    const imageCountEl = document.getElementById('imageCount');
+    const textCountEl = document.getElementById('textCount');
+    const otherCountEl = document.getElementById('otherCount');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+
+    // Event Listeners
+    logoutBtn.addEventListener('click', () => {
+      window.location.href = '/logout';
+    });
+
+    loginBtn.addEventListener('click', () => {
+      window.location.href = '/login';
+    });
+
+    uploadBtn.addEventListener('click', uploadFile);
+
+    fileInput.addEventListener('change', (e) => {
+      selectedFiles.innerHTML = '';
+      if (e.target.files.length > 0) {
+        Array.from(e.target.files).forEach(file => {
+          const fileEl = document.createElement('span');
+          fileEl.className = 'selected-file';
+          fileEl.innerHTML = `
+            ${file.name} (${formatFileSize(file.size)})
+            <i class="fas fa-times" data-name="${file.name}"></i>
+          `;
+          selectedFiles.appendChild(fileEl);
+        });
+
+        // Add event listeners to remove buttons
+        document.querySelectorAll('.selected-file i').forEach(icon => {
+          icon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const fileName = icon.getAttribute('data-name');
+            const dt = new DataTransfer();
+            const files = fileInput.files;
+            
+            for (let i = 0; i < files.length; i++) {
+              if (files[i].name !== fileName) {
+                dt.items.add(files[i]);
+              }
+            }
+            
+            fileInput.files = dt.files;
+            icon.parentElement.remove();
+          });
+        });
+      }
+    });
+
+    // Helper Functions
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function getFileIcon(filename) {
+      const ext = filename.split('.').pop().toLowerCase();
+      const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+      const textExts = ['txt', 'md', 'log', 'csv', 'json', 'js', 'css', 'html', 'xml'];
+      
+      if (imageExts.includes(ext)) return 'fas fa-file-image file-icon image';
+      if (textExts.includes(ext)) return 'fas fa-file-alt file-icon text';
+      return 'fas fa-file file-icon other';
+    }
+
+    function showToast(message, type = 'success') {
+      const iconMap = {
+        success: 'fas fa-check-circle',
+        error: 'fas fa-exclamation-circle',
+        warning: 'fas fa-exclamation-triangle',
+        info: 'fas fa-info-circle'
+      };
+      
+      toast.innerHTML = `
+        <i class="${iconMap[type]}"></i>
+        <span>${message}</span>
+      `;
+      
+      toast.className = `toast show ${type}`;
+      
+      setTimeout(() => {
+        toast.className = 'toast';
+      }, 3000);
+    }
+
+    // Main Functions
+    async function checkAuth() {
+      try {
+        const res = await fetch('/me');
+        if (res.status === 200) {
+          authSection.style.display = 'none';
+          fileSection.style.display = 'block';
+          logoutBtn.style.display = 'block';
+          await Promise.all([fetchFiles(), fetchAnalytics()]);
+        } else {
+          authSection.style.display = 'flex';
+          fileSection.style.display = 'none';
+          logoutBtn.style.display = 'none';
+        }
+      } catch (err) {
+        console.error('Auth check failed', err);
+      }
+    }
+
+    async function uploadFile() {
+      if (!fileInput.files.length) {
+        showToast('Please select at least one file', 'error');
+        return;
+      }
+
+      const formData = new FormData();
+      Array.from(fileInput.files).forEach(file => {
+        formData.append("files", file);
+      });
+
+      // Show loading state
+      uploadBtn.disabled = true;
+      uploadBtn.innerHTML = `
+        <i class="fas fa-spinner fa-spin"></i> Uploading...
+      `;
+
+      try {
+        const res = await fetch("/upload", {
+          method: "POST",
+          body: formData
+        });
+        
+        if (!res.ok) throw new Error('Upload failed');
+        
+        const result = await res.json();
+        showToast(`${result.message || 'Files uploaded successfully!'}`, 'success');
+        fileInput.value = '';
+        selectedFiles.innerHTML = '';
+        await Promise.all([fetchFiles(), fetchAnalytics()]);
+      } catch (err) {
+        console.error("Upload failed", err);
+        showToast("Upload failed. Please try again.", 'error');
+      } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.innerHTML = `
+          <i class="fas fa-upload"></i> Upload Files
+        `;
+      }
+    }
+
+    async function fetchFiles() {
+      try {
+        const res = await fetch("/files");
+        if (!res.ok) throw new Error('Failed to fetch files');
+        
+        const files = await res.json();
+        renderFileList(files);
+      } catch (err) {
+        console.error("Failed to fetch files", err);
+        showToast("Failed to load files. Please refresh the page.", 'error');
+      }
+    }
+
+    function renderFileList(files) {
+      fileList.innerHTML = '';
+      
+      if (files.length === 0) {
+        fileList.innerHTML = `
+          <li class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <p>No files uploaded yet</p>
+            <p class="text-muted">Upload your first file to get started</p>
+          </li>
+        `;
+        return;
+      }
+      
+      files.forEach(filename => {
+        const fileItem = document.createElement('li');
+        fileItem.className = 'file-item';
+        fileItem.innerHTML = `
+          <div class="file-info">
+            <i class="${getFileIcon(filename)}"></i>
+            <div class="file-details">
+              <div class="file-name" title="${filename}">${filename}</div>
+              <div class="file-meta">
+                <span><i class="fas fa-calendar-alt"></i> ${new Date().toLocaleDateString()}</span>
+                <span><i class="fas fa-database"></i> 1.2 MB</span>
+              </div>
+            </div>
+          </div>
+          <div class="file-actions">
+            <button class="btn btn-outline btn-icon" onclick="previewFile('${filename}')" title="Preview">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="btn btn-outline btn-icon" onclick="downloadFile('${filename}')" title="Download">
+              <i class="fas fa-download"></i>
+            </button>
+            <button class="btn btn-outline btn-icon" onclick="deleteFile('${filename}')" title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        `;
+        fileList.appendChild(fileItem);
+      });
+    }
+
+    async function fetchAnalytics() {
+      try {
+        const res = await fetch("/analytics");
+        if (!res.ok) throw new Error('Failed to fetch analytics');
+        
+        const data = await res.json();
+        renderAnalytics(data);
+      } catch (err) {
+        console.error("Error loading analytics:", err);
+      }
+    }
+
+    function renderAnalytics(data) {
+      totalFilesEl.textContent = data.totalFiles;
+      totalSizeEl.textContent = data.totalSizeMB;
+      imageCountEl.textContent = data.fileCategories.Images;
+      textCountEl.textContent = data.fileCategories.Text;
+      otherCountEl.textContent = data.fileCategories.Others;
+
+      // Update chart
+      const ctx = document.getElementById('categoryChart').getContext('2d');
+      
+      // Destroy previous chart if it exists
+      if (window.fileChart) {
+        window.fileChart.destroy();
+      }
+      
+      window.fileChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Images', 'Text', 'Others'],
+          datasets: [{
+            data: [
+              data.fileCategories.Images,
+              data.fileCategories.Text,
+              data.fileCategories.Others
+            ],
+            backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+            }
+          },
+          cutout: '70%'
+        }
+      });
+    }
+
+    function previewFile(filename) {
+      const extension = filename.split('.').pop().toLowerCase();
+      
+      if (['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(extension)) {
+        Swal.fire({
+          title: 'Image Preview',
+          imageUrl: `/preview/${filename}`,
+          imageAlt: filename,
+          showConfirmButton: false,
+          background: 'var(--card)',
+          backdrop: `
+            rgba(0,0,0,0.7)
+            url("/favicon.ico")
+            center left
+            no-repeat
+          `,
+          showCloseButton: true,
+          width: '80%'
+        });
+      } else if (['txt', 'md', 'log', 'csv', 'json', 'js', 'css', 'html'].includes(extension)) {
+        fetch(`/preview/${filename}`)
+          .then(res => res.text())
+          .then(text => {
+            Swal.fire({
+              title: 'Text Preview',
+              html: `<pre style="text-align: left; max-height: 60vh; overflow: auto;">${escapeHtml(text)}</pre>`,
+              showConfirmButton: false,
+              background: 'var(--card)',
+              showCloseButton: true,
+              width: '80%',
+              padding: '2rem'
+            });
+          })
+          .catch(err => {
+            showToast('Failed to load file preview', 'error');
+          });
+      } else {
+        Swal.fire({
+          title: 'Preview Not Available',
+          text: 'No preview available for this file type.',
+          icon: 'info',
+          confirmButtonText: 'OK',
+          background: 'var(--card)'
+        });
+      }
+
+      function escapeHtml(text) {
+        return text.replace(/[&<>"']/g, c => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+        })[c]);
+      }
+    }
+
+    function downloadFile(filename) {
+      showToast(`Downloading ${filename}...`, 'info');
+      window.location.href = `/download/${filename}`;
+    }
+
+    async function deleteFile(filename) {
+      try {
+        const { isConfirmed } = await Swal.fire({
+          title: 'Delete File?',
+          text: `Are you sure you want to delete "${filename}"? This action cannot be undone.`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#ef4444',
+          cancelButtonColor: '#64748b',
+          confirmButtonText: 'Yes, delete it!',
+          background: 'var(--card)'
+        });
+        
+        if (!isConfirmed) return;
+        
+        const res = await fetch(`/delete/${filename}`, { method: "DELETE" });
+        if (!res.ok) throw new Error('Delete failed');
+        
+        const result = await res.json();
+        showToast(result.message || "File deleted successfully!", 'success');
+        await Promise.all([fetchFiles(), fetchAnalytics()]);
+      } catch (err) {
+        console.error("Delete failed", err);
+        showToast("Delete failed. Please try again.", 'error');
+      }
+    }
+
+    // Initialize
+    checkAuth();
+  </script>
+</body>
+</html>
