@@ -20,7 +20,6 @@ app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUniniti
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Azure Blob Storage
 const accountName = process.env.AZURE_ACCOUNT_NAME;
 const containerName = process.env.AZURE_CONTAINER_NAME;
 const credential = new DefaultAzureCredential();
@@ -30,7 +29,7 @@ const blobServiceClient = new BlobServiceClient(
 );
 const containerClient = blobServiceClient.getContainerClient(containerName);
 
-// Azure AD Passport Config
+
 passport.use(new OIDCStrategy({
   identityMetadata: `https://login.microsoftonline.com/${process.env.AZURE_TENANT_ID}/v2.0/.well-known/openid-configuration`,
   clientID: process.env.AZURE_CLIENT_ID,
