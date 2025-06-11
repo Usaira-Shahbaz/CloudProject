@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
 const { DefaultAzureCredential } = require('@azure/identity');
@@ -10,19 +11,18 @@ const passport = require('passport');
 const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
 const mime = require('mime-types');
 
-
 const app = express();
 const upload = multer({ dest: 'uploads/' });
 
 app.use(cors());
 app.use(express.static('public'));
-app.use(session({ secret: 'yourSecret', resave: false, saveUninitialized: false }));
+app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
 // Azure Blob Storage
-const accountName = "azprojectblob";
-const containerName = "azcontainer";
+const accountName = process.env.AZURE_ACCOUNT_NAME;
+const containerName = process.env.AZURE_CONTAINER_NAME;
 const credential = new DefaultAzureCredential();
 const blobServiceClient = new BlobServiceClient(
   `https://${accountName}.blob.core.windows.net`,
@@ -32,12 +32,12 @@ const containerClient = blobServiceClient.getContainerClient(containerName);
 
 // Azure AD Passport Config
 passport.use(new OIDCStrategy({
-  identityMetadata: `https://login.microsoftonline.com/75df096c-8b72-48e4-9b91-cbf79d87ee3a/v2.0/.well-known/openid-configuration`,
-  clientID: 'cb924d9e-8528-4744-b152-4339712ae756',
-  clientSecret: 'ciC8Q~Ydt4uxizSaSMditiBh36ctwNDVN5IV8cQN',
+  identityMetadata: `https://login.microsoftonline.com/${process.env.AZURE_TENANT_ID}/v2.0/.well-known/openid-configuration`,
+  clientID: process.env.AZURE_CLIENT_ID,
+  clientSecret: process.env.AZURE_CLIENT_SECRET,
   responseType: 'code',
   responseMode: 'query',
-  redirectUrl: 'http://localhost:3000/auth/redirect',
+  redirectUrl: process.env.AZURE_REDIRECT_URI,
   allowHttpForRedirectUrl: true,
   scope: ['profile', 'email', 'openid']
 }, function(iss, sub, profile, accessToken, refreshToken, done) {
@@ -126,7 +126,7 @@ app.delete('/delete/:filename', ensureAuthenticated, async (req, res) => {
   }
 });
 
-// Update File (Re-upload)
+// Update File
 app.post('/update', ensureAuthenticated, upload.single('file'), async (req, res) => {
   try {
     const blobName = req.file.originalname;
@@ -140,6 +140,7 @@ app.post('/update', ensureAuthenticated, upload.single('file'), async (req, res)
   }
 });
 
+// File Preview
 app.get('/preview/:filename', ensureAuthenticated, async (req, res) => {
   try {
     const blobClient = containerClient.getBlobClient(req.params.filename);
@@ -157,6 +158,8 @@ app.get('/preview/:filename', ensureAuthenticated, async (req, res) => {
     res.status(500).send({ error: err.message });
   }
 });
+
+// Analytics
 app.get('/analytics', ensureAuthenticated, async (req, res) => {
   try {
     const fileCategories = {
@@ -193,5 +196,4 @@ app.get('/analytics', ensureAuthenticated, async (req, res) => {
   }
 });
 
-
-app.listen(3000, () => console.log('Server started at http://localhost:3000'));
+app.listen(process.env.PORT, () => console.log(`Server started at http://localhost:${process.env.PORT}`));
